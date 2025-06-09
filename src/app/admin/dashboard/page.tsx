@@ -9,7 +9,7 @@ const Page = () => {
 
   const logout = () => {
     signOut({
-      callbackUrl: "/login",
+      callbackUrl: "/auth/login",
     })
   }
 

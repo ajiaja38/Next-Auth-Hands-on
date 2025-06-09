@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth, { AuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
+import GoogleProvider from "next-auth/providers/google"
 import { api } from "../../api"
 import { ResponseEntity } from "@/types/interface/IResponse.interface"
 import { ILoginResponse } from "@/types/interface/IAuth.interface"
 import {
+  ERole,
   IJwtPayload,
   ISessionPayload,
 } from "@/types/interface/IJwtPayload.interface"
@@ -12,6 +14,10 @@ import { jwtDecode } from "jwt-decode"
 
 const authOptions: AuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -46,8 +52,18 @@ const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
-      return { ...token, ...user }
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        if (account.provider === "google") {
+          token.role = ERole.USER
+          token.id = user.id ?? ""
+          token.email = user.email ?? ""
+        } else {
+          token = { ...token, ...user }
+        }
+      }
+
+      return token
     },
     async session({ session, token }) {
       session.user = token as any

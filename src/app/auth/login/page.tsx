@@ -23,17 +23,20 @@ export default function LoginPage() {
       const session = await getSession()
 
       if (session?.user.role === ERole.ADMIN) router.push("/admin/dashboard")
-
-      if (session?.user.role === ERole.USER) router.push("/user/dashboard")
+      else if (session?.user.role === ERole.USER) router.push("/user/dashboard")
     } else {
       alert(res?.error)
     }
   }
 
+  const handleGoogleLogin = async () => {
+    await signIn("google", { callbackUrl: "/user/dashboard" })
+  }
+
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2 w-96 p-6 border"
+      className="flex flex-col gap-4 w-96 p-6 border mx-auto"
     >
       <input
         type="email"
@@ -51,6 +54,16 @@ export default function LoginPage() {
       />
       <button type="submit" className="p-4 border bg-lime-400">
         Login
+      </button>
+
+      <hr className="my-2" />
+
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        className="p-4 border bg-blue-500 text-white"
+      >
+        Login with Google
       </button>
     </form>
   )
