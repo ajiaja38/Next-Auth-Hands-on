@@ -10,7 +10,7 @@ export async function middleware(req: NextRequest) {
   })
 
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url))
+    return NextResponse.redirect(new URL("/auth/login", req.url))
   }
 
   if (req.nextUrl.pathname.startsWith("/admin") && token.role !== ERole.ADMIN)

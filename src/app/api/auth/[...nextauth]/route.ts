@@ -58,6 +58,8 @@ const authOptions: AuthOptions = {
           token.role = ERole.USER
           token.id = user.id ?? ""
           token.email = user.email ?? ""
+
+          console.log(`ID Token ${account.id_token}`)
         } else {
           token = { ...token, ...user }
         }
